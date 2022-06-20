@@ -1,21 +1,28 @@
 const fs = require("fs");
 const filename = process.argv[2];
-const moment= require('moment');
+const moment = require('moment');
 let coWorkingSpace = {
-    "C-Cave":{
-        capacity:3,
-        book:[]
+    "C-Cave": {
+        capacity: 3,
+        book: [],
+        seats: 0
     },
-    "D-Tower":{
-        capacity:7,
-        book:[]
+    "D-Tower": {
+        capacity: 7,
+        book: [],
+        seats: 0
     },
-    "G-Mansion":{
-        capacity:10,
-        book:[]
+    "G-Mansion": {
+        capacity: 20,
+        book: [],
+        seats: 0
     }
 
 }
+let C_cave = {};
+let D_Tower = {};
+let G_Mansion ={};
+
 function main(dataInput) {
     var inputLines = dataInput.toString().split("\n")
     for (i = 0; i < inputLines.length; i++) {
@@ -26,19 +33,78 @@ function main(dataInput) {
                     vacancy();
                     break;
                 case 'BOOK':
-                    vacancy(input[1], input[2], input[3]);
+                    addBooking(input[1], input[2], parseInt(input[3]));
                     break;
             }
         }
     }
 }
-const addBooking = (startTime,endTime, num)=>{
-console.log(startTime,endTime, num);   
+// TODo time validation need tobe done
+const addBooking = (startTime, endTime, num) => {
+
+    if (num <= 3) {
+        C_cave = coWorkingSpace['C-Cave'];
+        let Check  = C_cave.book.find(item=> (item.startTime==startTime && item.endTime ==endTime) );
+        let capCheck;
+        if(Check && Check.num){
+            capCheck= C_cave.capacity - Check.num;
+        }
+        if (!Check   || capCheck <= num) {
+
+            C_cave.seats = C_cave.seats + num;
+            
+            console.log('C-Cave');
+            C_cave.book.push({ startTime, endTime, num });
+        }
+        else {
+            console.log('NO_VACANT_ROOM');
+        }
+    }
+    else if (num > 3 && num < 7) {
+        
+        D_Tower = coWorkingSpace['D-Tower'];
+        let Check  = D_Tower.book.find(item=> (item.startTime==startTime && item.endTime ==endTime) );
+        let capCheck;
+        if(Check && Check.num){
+            capCheck= C_cave.capacity - Check.num;
+        }
+        if (!Check || capCheck <= num) {
+
+            D_Tower.seats = D_Tower.seats + num;
+            console.log('D-Tower');
+            D_Tower.book.push({ startTime, endTime, num });
+
+        }
+        else {
+            console.log('NO_VACANT_ROOM');
+        }
+    }
+    else if (num > 7 && num < 20) {
+
+        G_Mansion = coWorkingSpace['G-Mansion'];
+        let Check  = G_Mansion.book.find(item=> (item.startTime==startTime && item.endTime ==endTime) );
+        let capCheck;
+        if(Check && Check.num || capCheck <= num){
+            capCheck= C_cave.capacity - Check.num;
+        }
+        if (!Check) {
+            G_Mansion.seats = G_Mansion.seats + num;
+            console.log('G-Mansion');
+            G_Mansion.book.push({ startTime, endTime, num });
+
+        }
+        else {
+            console.log('NO_VACANT_ROOM');
+        }
+
+    } else {
+        console.log('NO_VACANT_ROOM');
+    }
 }
-const vacancy = ()=>{
+const vacancy = () => {
     let spaceList = []
-    for (item in coWorkingSpace){
-        if(coWorkingSpace[item].book && !spaceList.includes(item)){
+    for (item in coWorkingSpace) {
+        if (coWorkingSpace[item].book.length === 0 && !spaceList.includes(item)) {
             spaceList.push(item)
         }
     }
